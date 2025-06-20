@@ -113,17 +113,17 @@
     <ul class="main-links">
       <li>
         <a class="draggable project1" href="http://soundcloud.com/ruinedmoon">
-          <img src="btn1.png" alt="Project 1">
+          <img src="btn-1.png" alt="soundcloud">
         </a>
       </li>
       <li>
         <a class="draggable project2" href="http://bathinginthemoonlight.tumblr.com/">
-          <img src="btn2.png" alt="Project 2">
+          <img src="btn-2.png" alt="tumblr">
         </a>
       </li>
       <li>
         <a class="draggable project3" href="https://bathinginthemoonlight.bandcamp.com/">
-          <img src="btn3.png" alt="bandcamp">
+          <img src="btn-32.png" alt="bandcamp">
         </a>
       </li>
     </ul>
@@ -186,34 +186,68 @@
     animate();
 
     buttons.forEach((btn, index) => {
-      const obj = state[index];
+  const obj = state[index];
 
-      btn.addEventListener('touchstart', () => {
-        obj.isTouching = true;
-      });
+  // Desktop hover
+  let mouseX = 0, mouseY = 0;
 
-      btn.addEventListener('touchmove', (e) => {
-        e.preventDefault();
-        const touch = e.touches[0];
-        const rect = btn.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
+  const hoverAnimate = () => {
+    if (!obj.isTouching) return;
 
-        const dx = touch.clientX - centerX;
-        const dy = touch.clientY - centerY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        const angle = Math.atan2(dy, dx);
-        const clamped = Math.min(dist, maxOffset);
+    const dx = mouseX - obj.currentX;
+    const dy = mouseY - obj.currentY;
 
-        obj.targetX = Math.cos(angle) * clamped;
-        obj.targetY = Math.sin(angle) * clamped;
-      });
+    obj.targetX = dx;
+    obj.targetY = dy;
 
-      btn.addEventListener('touchend', () => {
-        obj.isTouching = false;
-        obj.targetX = 0;
-        obj.targetY = 0;
-      });
+    requestAnimationFrame(hoverAnimate);
+  };
+
+  btn.addEventListener('mouseenter', () => {
+    obj.isTouching = true;
+    requestAnimationFrame(hoverAnimate);
+  });
+
+  btn.addEventListener('mousemove', (e) => {
+    const rect = btn.getBoundingClientRect();
+    mouseX = (e.clientX - rect.left - rect.width / 2) * 0.6;
+    mouseY = (e.clientY - rect.top - rect.height / 2) * 0.6;
+  });
+
+  btn.addEventListener('mouseleave', () => {
+    obj.isTouching = false;
+    obj.targetX = 0;
+    obj.targetY = 0;
+  });
+
+  // Mobile touch
+  btn.addEventListener('touchstart', () => {
+    obj.isTouching = true;
+  });
+
+  btn.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    const touch = e.touches[0];
+    const rect = btn.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    const dx = touch.clientX - centerX;
+    const dy = touch.clientY - centerY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const angle = Math.atan2(dy, dx);
+    const clamped = Math.min(dist, maxOffset);
+
+    obj.targetX = Math.cos(angle) * clamped;
+    obj.targetY = Math.sin(angle) * clamped;
+  });
+
+  btn.addEventListener('touchend', () => {
+    obj.isTouching = false;
+    obj.targetX = 0;
+    obj.targetY = 0;
+  });
+});
     });
   </script>
 </body>
