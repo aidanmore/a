@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ruine</title>
+  <link rel="icon" href="ruine-icon.ico" type="image/x-icon">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #ffffff;
+      text-align: center;
+    }
+
+    .draggable {
+      position: relative;
+      display: inline-block;
+      perspective: 600px;
+    }
+
+    .draggable img {
+      height: 60px;
+      transition: transform 0.3s ease, filter 0.3s ease;
+      border-radius: 8px;
+    }
+
+    .scanline-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.025),
+        rgba(0, 0, 0, 0.025) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+      animation: scanMove 4s linear infinite;
+    }
+
+    @keyframes scanMove {
+      0% { background-position: 0 0; }
+      100% { background-position: 0 2px; }
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: row;
+      gap: 2em;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 2em;
+    }
+
+    @media (max-width: 600px) {
+      .header-banner img {
+        height: 220px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="scanline-overlay"></div>
+
+  <div class="draggable header-banner">
+    <img src="ruine-header.png" alt="Ruine Header">
+  </div>
+
+  <main>
+    <ul class="main-links">
+      <li>
+        <a class="draggable project1" href="http://soundcloud.com/ruinedmoon">
+          <img src="btn1.png" alt="Project 1">
+        </a>
+      </li>
+      <li>
+        <a class="draggable project2" href="http://bathinginthemoonlight.tumblr.com/">
+          <img src="btn2.png" alt="Project 2">
+        </a>
+      </li>
+      <li>
+        <a class="draggable project3" href="http://instagram.com/ruinedmoon">
+          <img src="btn3.png" alt="Project 3">
+        </a>
+      </li>
+    </ul>
+  </main>
+
+  <script>
+    document.querySelectorAll('.draggable').forEach((el) => {
+      const img = el.querySelector('img');
+
+      let mouseX = 0, mouseY = 0;
+      let currentX = 0, currentY = 0;
+      let hovering = false;
+
+      const animate = () => {
+        if (!hovering) return;
+
+        const dx = mouseX - currentX;
+        const dy = mouseY - currentY;
+
+        currentX += dx * 0.15;
+        currentY += dy * 0.15;
+
+        img.style.transform = `translate(${currentX}px, ${currentY}px) scale(1.05) rotate(${dx * 0.05}deg)`;
+
+        requestAnimationFrame(animate);
+      };
+
+      el.addEventListener('mouseenter', () => {
+        hovering = true;
+        requestAnimationFrame(animate);
+      });
+
+      el.addEventListener('mousemove', (e) => {
+        const rect = el.getBoundingClientRect();
+        mouseX = (e.clientX - rect.left - rect.width / 2) * 0.6;
+        mouseY = (e.clientY - rect.top - rect.height / 2) * 0.6;
+      });
+
+      el.addEventListener('mouseleave', () => {
+        hovering = false;
+        mouseX = mouseY = currentX = currentY = 0;
+        img.style.transform = 'translate(0, 0) scale(1) rotate(0deg)';
+      });
+    });
+  </script>
+</body>
+</html>
