@@ -6,7 +6,15 @@
   <title>a</title>
   <link rel="icon" href="ruine-icon.ico" type="image/x-icon">
   <style>
+    * {
+      user-select: none;
+      -webkit-user-drag: none;
+      -webkit-touch-callout: none;
+    }
+
     body {
+      overflow: hidden;
+      touch-action: none;
       margin: 0;
       font-family: Arial, sans-serif;
       background-color: #ffffff;
@@ -61,37 +69,38 @@
     }
 
     @media (max-width: 600px) {
-  .header-banner img {
-    max-height: 120px;
-    width: auto;
-  }
-}
-  .header-banner img {
-  max-width: 100%;
-  height: auto;
-}
-.white-blur-fade {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100px;
-  pointer-events: none;
-  z-index: 10000;
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.6),
-    rgba(255, 255, 255, 0.15),
-    rgba(255, 255, 255, 0)
-  );
-  mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0));
-  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0));
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-}
-</style>
-</head>
+      .header-banner img {
+        max-height: 120px;
+        width: auto;
+      }
+    }
 
+    .header-banner img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .white-blur-fade {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100px;
+      pointer-events: none;
+      z-index: 10000;
+      background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.6),
+        rgba(255, 255, 255, 0.15),
+        rgba(255, 255, 255, 0)
+      );
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0));
+      -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0));
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+  </style>
+</head>
 <body>
   <div class="white-blur-fade"></div>
   <div class="scanline-overlay"></div>
@@ -104,79 +113,108 @@
     <ul class="main-links">
       <li>
         <a class="draggable project1" href="http://soundcloud.com/ruinedmoon">
-          <img src="btn-1.png" alt="soundcloud">
+          <img src="btn1.png" alt="Project 1">
         </a>
       </li>
       <li>
         <a class="draggable project2" href="http://bathinginthemoonlight.tumblr.com/">
-          <img src="btn-2.png" alt="tumblr">
+          <img src="btn2.png" alt="Project 2">
         </a>
       </li>
       <li>
-        <a class="draggable project3" href="http://instagram.com/ruinedmoon">
-          <img src="btn-32.png" alt="bandcamp">
+        <a class="draggable project3" href="https://bathinginthemoonlight.bandcamp.com/">
+          <img src="btn3.png" alt="bandcamp">
         </a>
       </li>
     </ul>
   </main>
 
   <script>
-    document.querySelectorAll('.draggable').forEach((el) => {
-      const img = el.querySelector('img');
+    const buttons = document.querySelectorAll('.draggable');
 
-      let mouseX = 0, mouseY = 0;
-      let currentX = 0, currentY = 0;
-      let hovering = false;
+    const state = Array.from(buttons).map(btn => ({
+      btn,
+      targetX: 0,
+      targetY: 0,
+      currentX: 0,
+      currentY: 0,
+      rotation: 0,
+      scaleX: 1,
+      scaleY: 1,
+      isTouching: false
+    }));
 
-      const animate = () => {
-        if (!hovering) return;
+    const maxOffset = 35;
+    const followSpeed = 0.04;
+    const rotationFactor = 0.8;
+    const squishFactor = 0.001;
+    const repelDistance = 30;
 
-        const dx = mouseX - currentX;
-        const dy = mouseY - currentY;
+    const animate = () => {
+      state.forEach((obj, i) => {
+        const { btn } = obj;
 
-        currentX += dx * 0.15;
-        currentY += dy * 0.15;
+        obj.currentX += (obj.targetX - obj.currentX) * followSpeed;
+        obj.currentY += (obj.targetY - obj.currentY) * followSpeed;
 
-        img.style.transform = `translate(${currentX}px, ${currentY}px) scale(1.05) rotate(${dx * 0.05}deg)`;
+        obj.rotation = obj.currentX * rotationFactor;
 
-        requestAnimationFrame(animate);
-      };
+        const squishX = 1 - Math.abs(obj.targetX) * squishFactor;
+        const squishY = 1 + Math.abs(obj.targetY) * squishFactor;
+        obj.scaleX = Math.max(0.96, Math.min(1.04, squishX));
+        obj.scaleY = Math.max(0.96, Math.min(1.04, squishY));
 
-      el.addEventListener('mouseenter', () => {
-        hovering = true;
-        requestAnimationFrame(animate);
+        for (let j = 0; j < state.length; j++) {
+          if (i === j) continue;
+          const other = state[j];
+          const dx = obj.currentX - other.currentX;
+          const dy = obj.currentY - other.currentY;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < repelDistance) {
+            const push = (repelDistance - dist) / repelDistance * 0.5;
+            obj.currentX += dx * push * 0.05;
+            obj.currentY += dy * push * 0.05;
+          }
+        }
+
+        btn.style.transform = `translate(${obj.currentX}px, ${obj.currentY}px) rotate(${obj.rotation}deg) scale(${obj.scaleX}, ${obj.scaleY})`;
       });
 
-      el.addEventListener('mousemove', (e) => {
-        const rect = el.getBoundingClientRect();
-        mouseX = (e.clientX - rect.left - rect.width / 2) * 0.6;
-        mouseY = (e.clientY - rect.top - rect.height / 2) * 0.6;
+      requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    buttons.forEach((btn, index) => {
+      const obj = state[index];
+
+      btn.addEventListener('touchstart', () => {
+        obj.isTouching = true;
       });
 
-      el.addEventListener('mouseleave', () => {
-        hovering = false;
-        mouseX = mouseY = currentX = currentY = 0;
-        img.style.transform = 'translate(0, 0) scale(1) rotate(0deg)';
+      btn.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const rect = btn.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        const dx = touch.clientX - centerX;
+        const dy = touch.clientY - centerY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const angle = Math.atan2(dy, dx);
+        const clamped = Math.min(dist, maxOffset);
+
+        obj.targetX = Math.cos(angle) * clamped;
+        obj.targetY = Math.sin(angle) * clamped;
+      });
+
+      btn.addEventListener('touchend', () => {
+        obj.isTouching = false;
+        obj.targetX = 0;
+        obj.targetY = 0;
       });
     });
-      // Mobile touch support
-      el.addEventListener('touchstart', () => {
-        hovering = true;
-        requestAnimationFrame(animate);
-      });
-
-      el.addEventListener('touchmove', (e) => {
-        const touch = e.touches[0];
-        const rect = el.getBoundingClientRect();
-        mouseX = (touch.clientX - rect.left - rect.width / 2) * 0.6;
-        mouseY = (touch.clientY - rect.top - rect.height / 2) * 0.6;
-      }, { passive: true });
-
-      el.addEventListener('touchend', () => {
-        hovering = false;
-        mouseX = mouseY = currentX = currentY = 0;
-        img.style.transform = 'translate(0, 0) scale(1) rotate(0deg)';
-      });
-</script>
+  </script>
 </body>
 </html>
