@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ruine</title>
+  <title>a</title>
   <link rel="icon" href="ruine-icon.ico" type="image/x-icon">
   <style>
     body {
@@ -70,10 +70,30 @@
   max-width: 100%;
   height: auto;
 }
+.white-blur-fade {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  pointer-events: none;
+  z-index: 10000;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.6),
+    rgba(255, 255, 255, 0.15),
+    rgba(255, 255, 255, 0)
+  );
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0));
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0));
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
 </style>
 </head>
 
 <body>
+  <div class="white-blur-fade"></div>
   <div class="scanline-overlay"></div>
 
   <div class="draggable header-banner">
@@ -84,17 +104,17 @@
     <ul class="main-links">
       <li>
         <a class="draggable project1" href="http://soundcloud.com/ruinedmoon">
-          <img src="btn1.png" alt="Project 1">
+          <img src="btn1.png" alt="soundcloud">
         </a>
       </li>
       <li>
         <a class="draggable project2" href="http://bathinginthemoonlight.tumblr.com/">
-          <img src="btn2.png" alt="Project 2">
+          <img src="btn2.png" alt="tumblr">
         </a>
       </li>
       <li>
-        <a class="draggable project3" href="https://bathinginthemoonlight.bandcamp.com/">
-          <img src="btn32.png" alt="Project 3">
+        <a class="draggable project3" href="http://instagram.com/ruinedmoon">
+          <img src="btn32.png" alt="bandcamp">
         </a>
       </li>
     </ul>
