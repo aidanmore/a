@@ -33,6 +33,17 @@
       border-radius: 8px;
     }
 
+    .ghost-trail {
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0.08;
+      filter: blur(10px);
+      pointer-events: none;
+      transition: transform 0.4s ease-out;
+      mix-blend-mode: lighten;
+    }
+
     .scanline-overlay {
       position: fixed;
       top: 0;
@@ -75,6 +86,10 @@
       }
     }
 
+    .header-banner {
+      position: relative;
+    }
+
     .header-banner img {
       max-width: 100%;
       height: auto;
@@ -106,18 +121,22 @@
   <div class="scanline-overlay"></div>
 
   <div class="draggable header-banner">
+    <img class="ghost-trail" src="ruine-header.png" alt="">
+    <img class="ghost-trail" src="ruine-header.png" alt="">
+    <img class="ghost-trail" src="ruine-header.png" alt="">
+    <img class="ghost-trail" src="ruine-header.png" alt="">
     <img src="ruine-header.png" alt="Ruine Header">
   </div>
 
   <main>
     <ul class="main-links">
       <li>
-        <a class="draggable project1" href="http://soundcloud.com/ruinedmoon">
+        <a class="draggable project1" href="https://soundcloud.com/ruinedmoon">
           <img src="btn-1n.png" alt="soundcloud">
         </a>
       </li>
       <li>
-        <a class="draggable project2" href="http://bathinginthemoonlight.tumblr.com/">
+        <a class="draggable project2" href="https://bathinginthemoonlight.tumblr.com/">
           <img src="btn-2n.png" alt="tumblr">
         </a>
       </li>
@@ -178,6 +197,17 @@
         }
 
         btn.style.transform = `translate(${obj.currentX}px, ${obj.currentY}px) rotate(${obj.rotation}deg) scale(${obj.scaleX}, ${obj.scaleY})`;
+
+        if (btn.classList.contains('header-banner')) {
+          const trails = btn.querySelectorAll('.ghost-trail');
+          trails.forEach((ghost, i) => {
+            const factor = 0.5 - i * 0.08;
+            const trailX = obj.currentX * factor;
+            const trailY = obj.currentY * factor;
+            ghost.style.transform = `translate(${trailX}px, ${trailY}px)`;
+            ghost.style.opacity = `${0.06 + (0.02 * (trails.length - i))}`;
+          });
+        }
       });
 
       requestAnimationFrame(animate);
@@ -186,67 +216,65 @@
     animate();
 
     buttons.forEach((btn, index) => {
-  const obj = state[index];
+      const obj = state[index];
 
-  // Desktop hover
-  let mouseX = 0, mouseY = 0;
+      let mouseX = 0, mouseY = 0;
 
-  const hoverAnimate = () => {
-    if (!obj.isTouching) return;
+      const hoverAnimate = () => {
+        if (!obj.isTouching) return;
 
-    const dx = mouseX - obj.currentX;
-    const dy = mouseY - obj.currentY;
+        const dx = mouseX - obj.currentX;
+        const dy = mouseY - obj.currentY;
 
-    obj.targetX = dx;
-    obj.targetY = dy;
+        obj.targetX = dx;
+        obj.targetY = dy;
 
-    requestAnimationFrame(hoverAnimate);
-  };
+        requestAnimationFrame(hoverAnimate);
+      };
 
-  btn.addEventListener('mouseenter', () => {
-    obj.isTouching = true;
-    requestAnimationFrame(hoverAnimate);
-  });
+      btn.addEventListener('mouseenter', () => {
+        obj.isTouching = true;
+        requestAnimationFrame(hoverAnimate);
+      });
 
-  btn.addEventListener('mousemove', (e) => {
-    const rect = btn.getBoundingClientRect();
-    mouseX = (e.clientX - rect.left - rect.width / 2) * 0.6;
-    mouseY = (e.clientY - rect.top - rect.height / 2) * 0.6;
-  });
+      btn.addEventListener('mousemove', (e) => {
+        const rect = btn.getBoundingClientRect();
+        mouseX = (e.clientX - rect.left - rect.width / 2) * 0.6;
+        mouseY = (e.clientY - rect.top - rect.height / 2) * 0.6;
+      });
 
-  btn.addEventListener('mouseleave', () => {
-    obj.isTouching = false;
-    obj.targetX = 0;
-    obj.targetY = 0;
-  });
+      btn.addEventListener('mouseleave', () => {
+        obj.isTouching = false;
+        obj.targetX = 0;
+        obj.targetY = 0;
+      });
 
-  // Mobile touch
-  btn.addEventListener('touchstart', () => {
-    obj.isTouching = true;
-  });
+      btn.addEventListener('touchstart', () => {
+        obj.isTouching = true;
+      });
 
-  btn.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-    const touch = e.touches[0];
-    const rect = btn.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
+      btn.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const rect = btn.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
 
-    const dx = touch.clientX - centerX;
-    const dy = touch.clientY - centerY;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    const angle = Math.atan2(dy, dx);
-    const clamped = Math.min(dist, maxOffset);
+        const dx = touch.clientX - centerX;
+        const dy = touch.clientY - centerY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const angle = Math.atan2(dy, dx);
+        const clamped = Math.min(dist, maxOffset);
 
-    obj.targetX = Math.cos(angle) * clamped;
-    obj.targetY = Math.sin(angle) * clamped;
-  });
+        obj.targetX = Math.cos(angle) * clamped;
+        obj.targetY = Math.sin(angle) * clamped;
+      });
 
-  btn.addEventListener('touchend', () => {
-    obj.isTouching = false;
-    obj.targetX = 0;
-    obj.targetY = 0;
-  });
+      btn.addEventListener('touchend', () => {
+        obj.isTouching = false;
+        obj.targetX = 0;
+        obj.targetY = 0;
+      });
     });
   </script>
 </body>
