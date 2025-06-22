@@ -120,12 +120,12 @@
   <div class="white-blur-fade"></div>
   <div class="scanline-overlay"></div>
 
-  <div class="draggable header-banner">
-    <img class="ghost-trail" src="ruine-header.png" alt="">
-    <img class="ghost-trail" src="ruine-header.png" alt="">
-    <img class="ghost-trail" src="ruine-header.png" alt="">
-    <img class="ghost-trail" src="ruine-header.png" alt="">
-    <img src="ruine-header.png" alt="Ruine Header">
+  <div class="draggable header-banner" id="headerBanner">
+    <img class="ghost-trail" src="ruine-header-1.png" alt="">
+    <img class="ghost-trail" src="ruine-header-1.png" alt="">
+    <img class="ghost-trail" src="ruine-header-1.png" alt="">
+    <img class="ghost-trail" src="ruine-header-1.png" alt="">
+    <img class="main-header" src="ruine-header-1.png" alt="Ruine Header">
   </div>
 
   <main>
@@ -214,6 +214,23 @@
     };
 
     animate();
+
+    // Tap/click to cycle header images
+    const headerBanner = document.getElementById("headerBanner");
+    const headerImages = [
+      "ruine-header-1.png",
+      "ruine-header-2.png",
+      "ruine-header-3.png",
+      "ruine-header-4.png"
+    ];
+    let currentHeaderIndex = 0;
+
+    headerBanner.addEventListener("click", () => {
+      currentHeaderIndex = (currentHeaderIndex + 1) % headerImages.length;
+      const newSrc = headerImages[currentHeaderIndex];
+      const allImgs = headerBanner.querySelectorAll("img");
+      allImgs.forEach(img => img.src = newSrc);
+    });
 
     buttons.forEach((btn, index) => {
       const obj = state[index];
