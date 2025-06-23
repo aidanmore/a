@@ -37,11 +37,15 @@
       position: absolute;
       top: 0;
       left: 0;
-      opacity: 0.08;
-      filter: blur(10px);
+      opacity: 0;
+      filter: blur(14px);
       pointer-events: none;
-      transition: transform 0.4s ease-out;
+      transition: transform 0.4s ease-out, opacity 0.3s ease;
       mix-blend-mode: lighten;
+    }
+
+    .ghost-trail.active {
+      opacity: 0.12;
     }
 
     .scanline-overlay {
@@ -205,7 +209,6 @@
             const trailX = obj.currentX * factor;
             const trailY = obj.currentY * factor;
             ghost.style.transform = `translate(${trailX}px, ${trailY}px)`;
-            ghost.style.opacity = `${0.06 + (0.02 * (trails.length - i))}`;
           });
         }
       });
@@ -215,7 +218,6 @@
 
     animate();
 
-    // Tap/click to cycle header images
     const headerBanner = document.getElementById("headerBanner");
     const headerImages = [
       "ruine-header-1.png",
@@ -239,6 +241,7 @@
 
       const hoverAnimate = () => {
         if (!obj.isTouching) return;
+        obj.btn.querySelectorAll('.ghost-trail').forEach(el => el.classList.add('active'));
 
         const dx = mouseX - obj.currentX;
         const dy = mouseY - obj.currentY;
@@ -264,10 +267,12 @@
         obj.isTouching = false;
         obj.targetX = 0;
         obj.targetY = 0;
+        btn.querySelectorAll('.ghost-trail').forEach(el => el.classList.remove('active'));
       });
 
       btn.addEventListener('touchstart', () => {
         obj.isTouching = true;
+        btn.querySelectorAll('.ghost-trail').forEach(el => el.classList.add('active'));
       });
 
       btn.addEventListener('touchmove', (e) => {
@@ -291,6 +296,7 @@
         obj.isTouching = false;
         obj.targetX = 0;
         obj.targetY = 0;
+        btn.querySelectorAll('.ghost-trail').forEach(el => el.classList.remove('active'));
       });
     });
   </script>
