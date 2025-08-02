@@ -157,8 +157,12 @@
         obj.currentX += (obj.targetX - obj.currentX) * followSpeed;
         obj.currentY += (obj.targetY - obj.currentY) * followSpeed;
 
-        const rawRotation = obj.currentX * rotationFactor;
-        obj.rotation = Math.max(-8, Math.min(8, rawRotation)); // clamps rotation between -8 and 8 degrees
+    const rawRotation = obj.currentX * rotationFactor;
+
+        obj.rotation = obj.btn.classList.contains('header-banner')
+        ? Math.max(-2, Math.min(2, rawRotation)) 
+        : rawRotation;
+
 
 
         const squishX = 1 - Math.abs(obj.targetX) * squishFactor;
