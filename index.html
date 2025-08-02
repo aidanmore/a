@@ -157,7 +157,9 @@
         obj.currentX += (obj.targetX - obj.currentX) * followSpeed;
         obj.currentY += (obj.targetY - obj.currentY) * followSpeed;
 
-        obj.rotation = obj.currentX * rotationFactor;
+        const rawRotation = obj.currentX * rotationFactor;
+        obj.rotation = Math.max(-8, Math.min(8, rawRotation)); // clamps rotation between -8 and 8 degrees
+
 
         const squishX = 1 - Math.abs(obj.targetX) * squishFactor;
         const squishY = 1 + Math.abs(obj.targetY) * squishFactor;
