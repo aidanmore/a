@@ -167,8 +167,8 @@
 
         const squishX = 1 - Math.abs(obj.targetX) * squishFactor;
         const squishY = 1 + Math.abs(obj.targetY) * squishFactor;
-        obj.scaleX = Math.max(0.96, Math.min(1.04, squishX));
-        obj.scaleY = Math.max(0.96, Math.min(1.04, squishY));
+        obj.scaleX = Math.max(0.99, Math.min(1.01, squishX));
+        obj.scaleY = Math.max(0.99, Math.min(1.01, squishY));
 
         for (let j = 0; j < state.length; j++) {
           if (i === j) continue;
