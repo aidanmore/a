@@ -160,7 +160,7 @@
     const rawRotation = obj.currentX * rotationFactor;
 
         obj.rotation = obj.btn.classList.contains('header-banner')
-        ? Math.max(-2, Math.min(2, rawRotation)) 
+        ? Math.max(-0.5, Math.min(0.5, rawRotation)) 
         : rawRotation;
 
 
