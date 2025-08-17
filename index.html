@@ -93,6 +93,19 @@
       height: auto;
     }
 
+    .bandcamp-embed {
+    width: 100%;
+    max-width: 350px;
+    margin: 2em auto 0;
+    }
+
+    .bandcamp-embed iframe {
+    width: 100%;
+    height: 470px;
+    border: 0;
+    }
+
+    
     .white-blur-fade {
       position: fixed;
       top: 0;
@@ -129,14 +142,14 @@
     <li><a class="draggable project3" href="https://bathinginthemoonlight.bandcamp.com/">bandcamp</a></li>
   </ul>
 
-  <div style="margin-top: 2em;">
-    <iframe 
-      style="border: 0; width: 350px; height: 470px;" 
-      src="https://bandcamp.com/EmbeddedPlayer/album=3125007672/size=large/bgcol=ffffff/linkcol=333333/tracklist=false/transparent=true/" 
-      seamless>
-        <a href="https://bathinginthemoonlight.bandcamp.com/album/symphony">symphony by m. c *a</a>
-    </iframe>
-  </div>
+  <div class="bandcamp-embed">
+  <iframe 
+    src="https://bandcamp.com/EmbeddedPlayer/album=3125007672/size=large/bgcol=ffffff/linkcol=333333/tracklist=false/transparent=true/" 
+    seamless>
+      <a href="https://bathinginthemoonlight.bandcamp.com/album/symphony">symphony by m. c *a</a>
+  </iframe>
+</div>
+
 </main>
 
   <script>
@@ -156,7 +169,7 @@
 
     const maxOffset = 35;
     const followSpeed = 0.04;
-    const rotationFactor = 0.8;
+    const rotationFactor = 0.0;
     const squishFactor = 0.001;
     const repelDistance = 30;
 
@@ -170,10 +183,8 @@
     const rawRotation = obj.currentX * rotationFactor;
 
         obj.rotation = obj.btn.classList.contains('header-banner')
-        ? Math.max(-0.5, Math.min(0.5, rawRotation)) 
+        ? 0 
         : rawRotation;
-
-
 
         const squishX = 1 - Math.abs(obj.targetX) * squishFactor;
         const squishY = 1 + Math.abs(obj.targetY) * squishFactor;
